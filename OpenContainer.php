@@ -38,7 +38,7 @@ class OpenContainer {
      * @return mixed
      */
     public function __get($key) {
-        if(!array_key_exists($key, $this->types)) {
+        if(!isset($this->types[$key])) {
             if(isset($this->instances[$key])) {
                 return $this->instances[$key];
             }
@@ -46,7 +46,7 @@ class OpenContainer {
         }
         $type = $this->types[$key];
         $value = (is_callable($type)) ? $type($this) : new $type($this);
-        if(in_array($key, $this->sharedTypes)) {
+        if(isset($this->sharedTypes[$key])) {
 
             // move instantiated type to instances collection
             unset($this->types[$key]);
@@ -75,9 +75,7 @@ class OpenContainer {
         if(isset($this->instances[$type])) {
             unset($this->instances[$type]);
         }
-        if(!in_array($type, $this->sharedTypes)) {
-            $this->sharedTypes[] = $type;
-        }
+        $this->sharedTypes[$type] = '';
         $this->types[$type] = $value;
     }
 
@@ -88,9 +86,8 @@ class OpenContainer {
     public function registerInstance($type, &$instance) {
         if(isset($this->types[$type])) {
             unset($this->types[$type]);
-            $index = array_search($type, $this->sharedTypes);
-            if($index != false) {
-                unset($this->sharedTypes[$index]);
+            if(isset($this->sharedTypes[$type])) {
+                unset($this->sharedTypes[$type]);
             }
         }
         $this->instances[$type] = $instance;
