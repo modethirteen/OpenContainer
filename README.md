@@ -59,7 +59,7 @@ Register a shared state type with a type name and a fully qualified injectable c
 ```php
 $this->registerSharedType('Bar', 'Path\To\Bar');
 
-$this->registeredSharedType('Bar', function(MyApplication $Container) {
+$this->registerSharedType('Bar', function(MyApplication $Container) {
   return new Bar();
 });
 ```
