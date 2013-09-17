@@ -1,0 +1,20 @@
+{
+  "name": "mindtouch/opencontainer",
+  "description": "A dependency injection container for PHP, please enjoy responsibly",
+  "type": "library",
+  "license": "Apache-2.0",
+  "authors" : [
+    {
+      "name": "James Andrew Vaughn",
+      "email": "andyv@mindtouch.com",
+      "role": "lead"
+    }
+  ],
+  "minimum-stability": "dev",
+  "support": {
+    "issues": "https://github.com/mindtouch/opencontainer/issues"
+  },
+  "require": {
+        "php": ">=5.3.0"
+  }
+}

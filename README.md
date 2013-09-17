@@ -8,9 +8,9 @@ Requirements
 
 Adding OpenContainer to your application
 ----------------------------------------
-Simply subclass OpenContainer and you're ready to go.
+Simply instantiate OpenContainer and you're ready to go.
 ```php
-class MyApplication extends OpenContainer { }
+$Container = new OpenContainer();
 ```
 
 Injectable Class
@@ -22,7 +22,7 @@ class Baz {
   private $Foo;
   private $Bar;
 
-  public function __construct(MyApplication $Container) {
+  public function __construct(Container $Container) {
     $this->Foo = $Container->Foo;
     $this->Bar = $Container->Bar;
   }
@@ -47,9 +47,9 @@ There are three different types to register in the container.
 ### Registering Stateless Type
 Register a stateless type with a type name and a fully qualified injectable class name OR constructor callback function. These types are recreated every time their are requested.
 ```php
-$this->registerType('Foo', 'Path\To\Foo');
+$Container->registerType('Foo', 'Path\To\Foo');
     
-$this->registerType('Foo', function(MyApplication $Container) {
+$Container->registerType('Foo', function(Container $Container) {
   $Factory = new FooFactory();
   return $Factory->newFoo();
 });
@@ -57,9 +57,9 @@ $this->registerType('Foo', function(MyApplication $Container) {
 ### Registering Shared State Type
 Register a shared state type with a type name and a fully qualified injectable class name OR constructor callback function. These types will be constructed once.
 ```php
-$this->registerSharedType('Bar', 'Path\To\Bar');
+$Container->registerSharedType('Bar', 'Path\To\Bar');
 
-$this->registerSharedType('Bar', function(MyApplication $Container) {
+$Container->registerSharedType('Bar', function(Container $Container) {
   return new Bar();
 });
 ```
@@ -67,5 +67,5 @@ $this->registerSharedType('Bar', function(MyApplication $Container) {
 Register an instance with a type name and the instance. This instance will be returned whenever the type is requested.
 ```php
 $Baz = Baz::newBaz($arg1, $arg2);
-$this->registerInstance('Baz', $Baz);
+$Container->registerInstance('Baz', $Baz);
 ```
