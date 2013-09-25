@@ -22,7 +22,7 @@ class Baz {
   private $Foo;
   private $Bar;
 
-  public function __construct(Container $Container) {
+  public function __construct(OpenContainer $Container) {
     $this->Foo = $Container->Foo;
     $this->Bar = $Container->Bar;
   }
@@ -49,7 +49,7 @@ Register a stateless type with a type name and a fully qualified injectable clas
 ```php
 $Container->registerType('Foo', 'Path\To\Foo');
     
-$Container->registerType('Foo', function(Container $Container) {
+$Container->registerType('Foo', function(OpenContainer $Container) {
   $Factory = new FooFactory();
   return $Factory->newFoo();
 });
@@ -59,7 +59,7 @@ Register a shared state type with a type name and a fully qualified injectable c
 ```php
 $Container->registerSharedType('Bar', 'Path\To\Bar');
 
-$Container->registerSharedType('Bar', function(Container $Container) {
+$Container->registerSharedType('Bar', function(OpenContainer $Container) {
   return new Bar();
 });
 ```

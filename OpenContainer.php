@@ -19,13 +19,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-namespace MindTouch;
+namespace MindTouch\OpenContainer;
 
 use Exception;
 
 /**
  * Class OpenContainer
- * @package MindTouch
+ * @package MindTouch\OpenContainer
  */
 class OpenContainer {
     private $types = array();
