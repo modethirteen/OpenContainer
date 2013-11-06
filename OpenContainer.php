@@ -4,9 +4,6 @@
  * Copyright (C) 2006-2013 MindTouch, Inc.
  * www.mindtouch.com  oss@mindtouch.com
  *
- * For community documentation and downloads visit wiki.developer.mindtouch.com;
- * please review the licensing section.
- *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -28,6 +25,7 @@ use Exception;
  * @package MindTouch\OpenContainer
  */
 class OpenContainer {
+
     private $types = array();
     private $sharedTypes = array();
     private $instances = array();
@@ -38,19 +36,27 @@ class OpenContainer {
      * @return mixed
      */
     public function __get($key) {
-        if(!isset($this->types[$key])) {
-            if(isset($this->instances[$key])) {
-                return $this->instances[$key];
-            }
+        if(isset($this->instances[$key])) {
+
+            // type was registered as an instance or was a previously instantiated shared type
+            return $this->instances[$key];
+        }
+        if(!isset($this->types[$key]) && !isset($this->sharedTypes[$key])) {
             throw new NotRegisteredInOpenContainerException($key);
         }
-        $type = $this->types[$key];
-        $value = (is_callable($type)) ? $type($this) : new $type($this);
-        if(isset($this->sharedTypes[$key])) {
 
-            // move instantiated type to instances collection
-            unset($this->types[$key]);
-            unset($this->sharedTypes[$key]);
+        // instantiate this type
+        $storeInstance = false;
+        if(isset($this->sharedTypes[$key])) {
+            $storeInstance = true;
+            $type = $this->sharedTypes[$key];
+        } else {
+            $type = $this->types[$key];
+        }
+        $value = (is_callable($type)) ? $type($this) : new $type($this);
+        if($storeInstance) {
+
+            // return instantiated shared types for future requests
             $this->instances[$key] = &$value;
         }
         return $value;
@@ -61,9 +67,8 @@ class OpenContainer {
      * @param mixed $value - a class or callback to create this type
      */
     public function registerType($type, $value) {
-        if(isset($this->instances[$type])) {
-            unset($this->instances[$type]);
-        }
+        $this->flush($type);
+        $this->unregisterSharedType($type);
         $this->types[$type] = $value;
     }
 
@@ -72,11 +77,9 @@ class OpenContainer {
      * @param mixed $value - a class or callback to create this type
      */
     public function registerSharedType($type, $value) {
-        if(isset($this->instances[$type])) {
-            unset($this->instances[$type]);
-        }
-        $this->sharedTypes[$type] = '';
-        $this->types[$type] = $value;
+        $this->flush($type);
+        $this->unregisterType($type);
+        $this->sharedTypes[$type] = $value;
     }
 
     /**
@@ -84,12 +87,8 @@ class OpenContainer {
      * @param object $instance - the instantiated type
      */
     public function registerInstance($type, &$instance) {
-        if(isset($this->types[$type])) {
-            unset($this->types[$type]);
-            if(isset($this->sharedTypes[$type])) {
-                unset($this->sharedTypes[$type]);
-            }
-        }
+        $this->unregisterType($type);
+        $this->unregisterSharedType($type);
         $this->instances[$type] = $instance;
     }
 
@@ -97,7 +96,7 @@ class OpenContainer {
      * @return array
      */
     public function getRegisteredTypes() {
-        return array_merge(array_keys($this->types), array_keys($this->instances));
+        return array_merge(array_keys($this->types), array_keys($this->sharedTypes), array_keys($this->instances));
     }
 
     /**
@@ -106,6 +105,35 @@ class OpenContainer {
      */
     public function isRegistered($type) {
         return in_array($type, $this->getRegisteredTypes());
+    }
+
+    /**
+     * delete stored instance of this type
+     *
+     * @param string $type
+     */
+    public function flush($type) {
+        if(isset($this->instances[$type])) {
+            unset($this->instances[$type]);
+        }
+    }
+
+    /**
+     * @param string $type
+     */
+    private function unregisterType($type) {
+        if(isset($this->types[$type])) {
+            unset($this->types[$type]);
+        }
+    }
+
+    /**
+     * @param string $type
+     */
+    private function unregisterSharedType($type) {
+        if(isset($this->sharedTypes[$type])) {
+            unset($this->sharedTypes[$type]);
+        }
     }
 }
 
