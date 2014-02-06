@@ -26,9 +26,9 @@ use Exception;
  */
 class OpenContainer {
 
-    private $types = array();
-    private $sharedTypes = array();
-    private $instances = array();
+    protected $types = array();
+    protected $sharedTypes = array();
+    protected $instances = array();
 
     /**
      * @param string $key
@@ -86,7 +86,7 @@ class OpenContainer {
      * @param string $type
      * @param object $instance - the instantiated type
      */
-    public function registerInstance($type, &$instance) {
+    public function registerInstance($type, $instance) {
         $this->unregisterType($type);
         $this->unregisterSharedType($type);
         $this->instances[$type] = $instance;
