@@ -1,6 +1,10 @@
 # OpenContainer
 A dependency injection container for PHP, please enjoy responsibly.
 
+[![travis-ci.org](https://travis-ci.org/MindTouch/OpenContainer.svg?branch=master)](https://travis-ci.org/MindTouch/OpenContainer)
+[![codecov.io](https://codecov.io/github/MindTouch/OpenContainer/coverage.svg?branch=master)](https://codecov.io/github/MindTouch/OpenContainer?branch=master)
+[![Latest Stable Version](https://poser.pugx.org/mindtouch/opencontainer/version.svg)](https://packagist.org/packages/mindtouch/opencontainer)
+
 ## Requirements
 * PHP 5.3+
 
