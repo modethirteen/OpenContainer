@@ -21,7 +21,9 @@
       "phpunit/phpunit": "~3.7"
   },
   "autoload": {
-    "psr-0": { "MindTouch\\OpenContainer\\": "" }
+    "psr-4": { "MindTouch\\OpenContainer\\": ["src/"] }
   },
-  "target-dir": "MindTouch/OpenContainer"
+  "autoload-dev": {
+    "psr-4": { "MindTouch\\OpenContainer\\test\\": ["test/"] }
+  }
 }

@@ -1,20 +1,36 @@
-OpenContainer
-=============
+# OpenContainer
 A dependency injection container for PHP, please enjoy responsibly.
 
-Requirements
-------------
+## Requirements
 * PHP 5.3+
 
-Adding OpenContainer to your application
-----------------------------------------
+## Installation
+Use [Composer](https://getcomposer.org/). There are two ways to add OpenContainer to your project.
+
+From the composer CLI:
+```sh
+$ ./composer.phar require mindtouch/opencontainer
+```
+
+Or add mindtouch/xarray to your project's composer.json:
+```json
+{
+    "require": {
+        "mindtouch/opencontainer": "dev-master"
+    }
+}
+```
+"dev-master" is the master development branch. If you are using OpenContainer in a production environment, it is advised that you use a stable release.
+
+Assuming you have setup Composer's autoloader, OpenContainer can be found in the MindTouch\OpenContainer\ namespace.
+
+## Adding OpenContainer to your application
 Simply instantiate OpenContainer and you're ready to go.
 ```php
 $Container = new OpenContainer();
 ```
 
-Injectable Class
-----------------
+## Injectable Class
 An injectable class uses constructor injection in a way that the container can instantiate it on the fly when it is required as dependency. In this example, Foo, Bar, and Baz are all in the container. If a registered type in the container requires Baz's method doSomething(), Baz must first go into the container and get it's dependencies, Foo and Bar.
 ```php
 class Baz {
@@ -33,8 +49,7 @@ class Baz {
 }
 ```
 
-Registering Types
------------------
+## Registering Types
 There are three different types to register in the container.
 
 * Stateless
