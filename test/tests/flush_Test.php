@@ -1,7 +1,7 @@
 <?php
-/*
+/**
  * MindTouch OpenContainer - a dependency injection container for PHP
- * Copyright (C) 2006-2013 MindTouch, Inc.
+ * Copyright (C) 2006-2016 MindTouch, Inc.
  * www.mindtouch.com  oss@mindtouch.com
  *
  * For community documentation and downloads visit wiki.developer.mindtouch.com;

@@ -16,18 +16,4 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-namespace MindTouch\OpenContainer\test;
-
-class InjectableTestClassWithComplexDependenciesOne {
-
-    private $DependencyOne;
-    private $DependencyTwo;
-
-    /**
-     * @param TestContainer $Container
-     */
-    public function __construct(TestContainer $Container) {
-        $this->DependencyOne = $Container->InjectableTestClassWithNoDependencies;
-        $this->DependencyTwo = $Container->InjectableTestClassWithSimpleDependencies;
-    }
-}
+require_once(dirname(__FILE__) . '/vendor/autoload.php');
