@@ -1,0 +1,11 @@
+parameters:
+    bootstrapFiles:
+        - %currentWorkingDirectory%/_bootstrap.php
+    ignoreErrors:
+        - message: '#Call to an undefined method ReflectionType::getName\(\)#'
+          path: %currentWorkingDirectory%/src/OpenContainer.php
+        - message: '#Unable to resolve the template type RealObjectType in call to method ProxyManager\\Factory\\LazyLoadingValueHolderFactory::createProxy\(\)#'
+          path: %currentWorkingDirectory%/src/OpenContainer.php
+    level: 7
+    paths:
+        - src

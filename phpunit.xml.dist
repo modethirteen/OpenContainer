@@ -1,5 +1,7 @@
-<phpunit bootstrap="_bootstrap.php" backupGlobals="false" processIsolation="false">
-    <testsuite name="AllTests">
-        <directory>test/tests</directory>
-    </testsuite>
+<phpunit bootstrap="_bootstrap.php">
+    <testsuites>
+        <testsuite name="All Tests">
+            <directory>tests</directory>
+        </testsuite>
+    </testsuites>
 </phpunit>

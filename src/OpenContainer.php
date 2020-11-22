@@ -1,8 +1,6 @@
-<?php
+<?php declare(strict_types=1);
 /**
- * MindTouch OpenContainer - a dependency injection container for PHP
- * Copyright (C) 2006-2016 MindTouch, Inc.
- * www.mindtouch.com  oss@mindtouch.com
+ * OpenContainer - a dependency injection container for PHP
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,133 +14,156 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-namespace MindTouch\OpenContainer;
+namespace modethirteen\OpenContainer;
 
-use Exception;
+use Closure;
+use ProxyManager\Factory\LazyLoadingValueHolderFactory;
+use ProxyManager\Proxy\LazyLoadingInterface;
+use ProxyManager\Proxy\VirtualProxyInterface;
+use ReflectionException;
+use ReflectionFunction;
 
-/**
- * Class OpenContainer
- * @package MindTouch\OpenContainer
- */
-class OpenContainer {
-
-    protected $types = array();
-    protected $sharedTypes = array();
-    protected $instances = array();
+class OpenContainer implements IContainer {
 
     /**
-     * @param string $key
-     * @throws NotRegisteredInOpenContainerException
-     * @return mixed
+     * @var Closure[]
      */
-    public function __get($key) {
-        if(isset($this->instances[$key])) {
-
-            // type was registered as an instance or was a previously instantiated shared type
-            return $this->instances[$key];
-        }
-        if(!isset($this->types[$key]) && !isset($this->sharedTypes[$key])) {
-            throw new NotRegisteredInOpenContainerException($key);
-        }
-
-        // instantiate this type
-        $storeInstance = false;
-        if(isset($this->sharedTypes[$key])) {
-            $storeInstance = true;
-            $type = $this->sharedTypes[$key];
-        } else {
-            $type = $this->types[$key];
-        }
-        $value = (is_callable($type)) ? $type($this) : new $type($this);
-        if($storeInstance) {
-
-            // return instantiated shared types for future requests
-            $this->instances[$key] = &$value;
-        }
-        return $value;
-    }
+    private array $builders = [];
 
     /**
-     * @param string $type
-     * @param mixed $value - a class or callback to create this type
+     * @var LazyLoadingValueHolderFactory
      */
-    public function registerType($type, $value) {
-        $this->flush($type);
-        $this->unregisterSharedType($type);
-        $this->types[$type] = $value;
-    }
+    private LazyLoadingValueHolderFactory $deferredInstanceFactory;
 
     /**
-     * @param string $type
-     * @param mixed $value - a class or callback to create this type
+     * @var VirtualProxyInterface[]
      */
-    public function registerSharedType($type, $value) {
-        $this->flush($type);
-        $this->unregisterType($type);
-        $this->sharedTypes[$type] = $value;
-    }
+    private array $deferredInstances = [];
 
     /**
-     * @param string $type
-     * @param object $instance - the instantiated type
+     * @var object[]
      */
-    public function registerInstance($type, $instance) {
-        $this->unregisterType($type);
-        $this->unregisterSharedType($type);
-        $this->instances[$type] = $instance;
-    }
+    private array $instances = [];
 
     /**
-     * @return array
-     */
-    public function getRegisteredTypes() {
-        return array_merge(array_keys($this->types), array_keys($this->sharedTypes), array_keys($this->instances));
-    }
-
-    /**
-     * @param string $type
-     * @return bool
-     */
-    public function isRegistered($type) {
-        return in_array($type, $this->getRegisteredTypes());
-    }
-
-    /**
-     * delete stored instance of this type
+     * Does this container return deferred proxy instances?
      *
-     * @param string $type
+     * @var bool
      */
-    public function flush($type) {
-        if(isset($this->instances[$type])) {
-            unset($this->instances[$type]);
-        }
+    private bool $isDeferred = false;
+
+    /**
+     * @var string[]
+     */
+    private array $types = [];
+
+    public function __construct() {
+        $this->deferredInstanceFactory = new LazyLoadingValueHolderFactory();
     }
 
     /**
-     * @param string $type
+     * @param string $id
+     * @return object
+     * @throws OpenContainerNotRegisteredInContainerException
+     * @throws OpenContainerCannotBuildDeferredInstanceException
      */
-    private function unregisterType($type) {
-        if(isset($this->types[$type])) {
-            unset($this->types[$type]);
+    public function __get(string $id) : object {
+        if($this->isDeferred && isset($this->deferredInstances[$id])) {
+
+            // requesting a previously generated deferred instance
+            return $this->deferredInstances[$id];
+        } else if(isset($this->instances[$id])) {
+
+            // type was registered as an instance or was a previously instantiated
+            return $this->instances[$id];
+        }
+
+        // instantiate the type or builder
+        $builder = null;
+        $type = isset($this->types[$id]) ? $this->types[$id] : null;
+        if($type === null) {
+            if(!isset($this->builders[$id])) {
+                throw new OpenContainerNotRegisteredInContainerException($id);
+            }
+            $builder = isset($this->builders[$id]) ? $this->builders[$id] : null;
+        }
+        if($this->isDeferred) {
+            if($builder !== null) {
+
+                // builder return type will be used as proxy until builder creates instance
+                try {
+                    $reflectionType = (new ReflectionFunction($builder))->getReturnType();
+                } catch(ReflectionException $e) {
+                    $reflectionType = null;
+                }
+                if($reflectionType === null) {
+                    throw new OpenContainerCannotBuildDeferredInstanceException($id);
+                }
+
+                /** @var ReflectionFunction $reflectionType */
+                $type = $reflectionType->getName();
+            }
+
+            // build deferred instance
+            $instance = $this->deferredInstanceFactory
+                ->createProxy($type, function(&$instance, LazyLoadingInterface $proxy) use ($builder, $type) : bool {
+                    $proxy->setProxyInitializer(null);
+                    $instance = $builder !== null ? $builder($this) : new $type($this);
+                    return true;
+                });
+            $this->deferredInstances[$id] = $instance;
+        } else {
+
+            // build instance
+            $instance = $builder !== null ? $builder($this) : new $type($this);
+            $this->instances[$id] = $instance;
+        }
+        return $instance;
+    }
+
+    public function flushInstance(string $id) : void {
+        if(isset($this->instances[$id])) {
+            unset($this->instances[$id]);
         }
     }
 
-    /**
-     * @param string $type
-     */
-    private function unregisterSharedType($type) {
-        if(isset($this->sharedTypes[$type])) {
-            unset($this->sharedTypes[$type]);
-        }
+    public function isDeferredContainer(): bool {
+        return $this->isDeferred;
     }
-}
 
-class NotRegisteredInOpenContainerException extends Exception {
+    public function isRegistered(string $id) : bool {
+        return in_array($id, array_merge(array_keys($this->builders), array_keys($this->instances), array_keys($this->types)));
+    }
+
+    public function registerBuilder(string $id, Closure $builder) : void {
+        $this->unregister($id);
+        $this->builders[$id] = $builder;
+    }
+
+    public function registerInstance(string $id, object $instance) : void {
+        $this->unregister($id);
+        $this->instances[$id] = $instance;
+    }
+
+    public function registerType(string $id, string $class) : void {
+        $this->unregister($id);
+        $this->types[$id] = $class;
+    }
+
+    public function toDeferredContainer() : object {
+        $container = clone $this;
+        $container->isDeferred = true;
+        return $container;
+    }
 
     /**
-     * @param string $key
+     * Remove all registrations and instances for an id
+     *
+     * @param string $id
      */
-    public function __construct($key) {
-        parent::__construct('Could not find "' . $key . '" registered in the container');
+    protected function unregister(string $id) : void {
+        unset($this->builders[$id]);
+        unset($this->instances[$id]);
+        unset($this->types[$id]);
     }
 }

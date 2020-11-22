@@ -14,4 +14,30 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-require_once(dirname(__FILE__) . '/vendor/autoload.php');
+namespace modethirteen\OpenContainer\Tests;
+
+/**
+ * Class CircularDependencyOne
+ * @package modethirteen\OpenContainer\Tests
+ */
+class CircularDependencyOne {
+
+    /**
+     * @var CircularDependencyTwo|null
+     */
+    private ?CircularDependencyTwo $dependency;
+
+    /**
+     * @param IDependencyContainer $container
+     */
+    public function __construct(IDependencyContainer $container) {
+        $this->dependency = $container->CircularDependencyTwo;
+    }
+
+    /**
+     * @return CircularDependencyTwo|null
+     */
+    public function getDependency() : ?CircularDependencyTwo {
+        return $this->dependency;
+    }
+}
