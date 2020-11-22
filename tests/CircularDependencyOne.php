@@ -16,6 +16,8 @@
  */
 namespace modethirteen\OpenContainer\Tests;
 
+use phpDocumentor\Reflection\DocBlock\Tags\Property;
+
 /**
  * Class CircularDependencyOne
  * @package modethirteen\OpenContainer\Tests
