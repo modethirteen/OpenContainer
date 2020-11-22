@@ -5,6 +5,7 @@ A dependency injection container for PHP, please enjoy responsibly.
 [![travis-ci.org](https://travis-ci.org/modethirteen/OpenContainer.svg?branch=master)](https://travis-ci.org/modethirteen/OpenContainer)
 [![codecov.io](https://codecov.io/github/modethirteen/OpenContainer/coverage.svg?branch=master)](https://codecov.io/github/modethirteen/OpenContainer?branch=master)
 [![Latest Stable Version](https://poser.pugx.org/modethirteen/opencontainer/version.svg)](https://packagist.org/packages/modethirteen/opencontainer)
+[![Latest Unstable Version](https://poser.pugx.org/modethirteen/opencontainer/v/unstable)](https://packagist.org/packages/modethirteen/opencontainer)
 
 ## About
 
