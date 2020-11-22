@@ -27,7 +27,7 @@ class DependencyContainer extends OpenContainer implements IDependencyContainer 
     public function __construct() {
         parent::__construct();
         $this->registerType('CircularDependencyOne', CircularDependencyOne::class);
-        $this->registerBuilder('CircularDependencyTwo', function(DependencyContainer $container) : CircularDependencyTwo {
+        $this->registerBuilder('CircularDependencyTwo', function(IDependencyContainer $container) : CircularDependencyTwo {
             return new CircularDependencyTwo($container);
         });
         $this->registerBuilder('Instance', function() : array {

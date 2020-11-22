@@ -21,7 +21,6 @@ namespace modethirteen\OpenContainer\Tests;
  * @package modethirteen\OpenContainer\Tests
  */
 class CircularDependencyTwo {
-    const EXPECTED = 'xyzzy';
 
     /**
      * @var CircularDependencyOne|null
