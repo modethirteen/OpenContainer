@@ -57,8 +57,8 @@ class Baz {
   private Bar $bar;
 
   public function __construct(IContainer $container) {
-    $this->foo = $Container->Foo;
-    $this->bar = $Container->Bar;
+    $this->foo = $container->Foo;
+    $this->bar = $container->Bar;
   }
   
   public function doSomething() : string {
