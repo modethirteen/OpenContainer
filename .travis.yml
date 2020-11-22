@@ -7,7 +7,7 @@ cache:
   directories:
     - vendor
 
-before_install: phpenv config add development.ini
+before_install: phpenv config-add development.ini
 
 install: composer install
 
