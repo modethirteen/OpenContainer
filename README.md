@@ -73,7 +73,7 @@ Registering a type requires a symbol to identify the type when fetching it's ins
 
 ```php
 /**
- * setup the type as a virtual property so that IDE's that support type checking or static analysis can take advantage
+ * setup the type as a virtual property so that IDE's that support type checking can take advantage
  *
  * @property Foo $Foo
  */
@@ -93,7 +93,7 @@ Registering an instance requires a symbol to identify the instance when fetching
 
 ```php
 /**
- * setup the type as a virtual property so that IDE's that support type checking or static analysis can take advantage
+ * setup the type as a virtual property so that IDE's that support type checking can take advantage
  *
  * @property Bar $Bar
  */
@@ -113,7 +113,7 @@ Registering a builder requires a symbol to identify the instance when fetching i
 
 ```php
 /**
- * setup the type as a virtual property so that IDE's that support type checking or static analysis can take advantage
+ * setup the type as a virtual property so that IDE's that support type checking can take advantage
  *
  * @property Qux $Qux
  */
