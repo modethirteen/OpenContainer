@@ -1,4 +1,7 @@
 .idea/
 .phpunit.result.cache
+phpunit.xml
+composer.lock
 composer.phar
 vendor/
+*.orig

@@ -133,7 +133,7 @@ $instance = $container->Qux;
 
 ## Deferred Container
 
-A deferred container attempts to use reflection and class proxies to avoid circular dependencies. A deferred container returns proxies, which are not materialized until a method or property is accessed on the proxy. This behavior is useful as without it, every dependency in the tree is instantiated when the root dependency is first instantiated (whether those downstream dependencies will be eventually used or not). Without deferring dependency instantiation until those dependencies are actually needed, any circular dependency returns a null value if they can't be resolved.
+A deferred container attempts to use reflection and class proxies to avoid circular dependencies. A deferred container returns proxies, which are not materialized until a method or property is accessed on the proxy. This behavior is useful as without it, every dependency in the tree is instantiated when the root dependency is first instantiated (whether those downstream dependencies will be eventually used or not). Without deferring dependency instantiation until those dependencies are actually needed, any circular dependency returns a null value or, depending on configuration, raises an _Undefined Property_ warning if they can't be resolved.
 
 ```php
 $container = (new OpenContainer)->toDeferredContainer();
