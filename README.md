@@ -13,7 +13,8 @@ OpenContainer was created as an attempt to leverage strict type checking availab
 
 ## Requirements
 
-* PHP 7.4+
+* PHP < 7.4 (0.x)
+* PHP 7.4+ (main, 2.x)
 
 ## Installation
 
@@ -30,12 +31,12 @@ Or add modethirteen/opencontainer to your project's composer.json:
 ```json
 {
     "require": {
-        "modethirteen/opencontainer": "dev-master"
+        "modethirteen/opencontainer": "dev-main"
     }
 }
 ```
 
-"dev-master" is the master development branch. If you are using OpenContainer in a production environment, it is advised that you use a stable release.
+"dev-main" is the main development branch. If you are using OpenContainer in a production environment, it is advised that you use a stable release.
 
 Assuming you have setup Composer's autoloader, OpenContainer can be found in the modethirteen\OpenContainer\ namespace.
 
