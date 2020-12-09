@@ -10,7 +10,6 @@
       "role": "maintainer"
     }
   ],
-  "minimum-stability": "dev",
   "support": {
     "issues": "https://github.com/modethirteen/opencontainer/issues"
   },
