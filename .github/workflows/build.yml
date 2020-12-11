@@ -1,0 +1,40 @@
+name: build
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        php: [7.2, 7.3, 7.4]
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Validate dependencies
+        run: composer validate
+
+      - name: Cache dependencies
+        id: composer-cache
+        uses: actions/cache@v2
+        with:
+          path: vendor
+          key: ${{ runner.os }}-php-${{ hashFiles('**/composer.json') }}
+          restore-keys: |
+            ${{ runner.os }}-php-
+      - name: Install dependencies
+        if: steps.composer-cache.outputs.cache-hit != 'true'
+        run: composer install --prefer-dist --no-progress --no-suggest
+
+      - name: Run static analysis
+        run: vendor/bin/phpstan analyse --level 7 src
+
+      - name: Run test suite
+        run: vendor/bin/phpunit --configuration phpunit.xml.dist --coverage-clover=coverage.xml
+
+      - uses: codecov/codecov-action@v1
