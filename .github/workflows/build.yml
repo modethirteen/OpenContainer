@@ -2,9 +2,9 @@ name: build
 
 on:
   push:
-    branches: [ main ]
+    branches: [ main, php72 ]
   pull_request:
-    branches: [ main ]
+    branches: [ main, php72 ]
 
 jobs:
   test:
