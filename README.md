@@ -2,7 +2,7 @@
 
 A dependency injection container for PHP, please enjoy responsibly.
 
-[![travis-ci.com](https://travis-ci.com/modethirteen/OpenContainer.svg?branch=master)](https://travis-ci.com/modethirteen/OpenContainer)
+[![github.com](https://github.com/modethirteen/OpenContainer/workflows/build/badge.svg)](https://github.com/modethirteen/OpenContainer/actions?query=workflow%3Abuild)
 [![codecov.io](https://codecov.io/github/modethirteen/OpenContainer/coverage.svg?branch=main)](https://codecov.io/github/modethirteen/OpenContainer?branch=main)
 [![Latest Stable Version](https://poser.pugx.org/modethirteen/opencontainer/version.svg)](https://packagist.org/packages/modethirteen/opencontainer)
 [![Latest Unstable Version](https://poser.pugx.org/modethirteen/opencontainer/v/unstable)](https://packagist.org/packages/modethirteen/opencontainer)
