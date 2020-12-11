@@ -18,6 +18,10 @@ namespace modethirteen\OpenContainer;
 
 use Closure;
 
+/**
+ * Interface IContainer
+ * @package modethirteen\OpenContainer
+ */
 interface IContainer {
 
     /**

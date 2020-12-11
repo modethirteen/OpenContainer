@@ -16,6 +16,8 @@
  */
 namespace modethirteen\OpenContainer\Tests;
 
+use modethirteen\OpenContainer\OpenContainerCannotBuildDeferredInstanceException;
+use modethirteen\OpenContainer\OpenContainerNotRegisteredInContainerException;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -39,7 +41,62 @@ class OpenContainerTest extends TestCase {
      * @param IDependencyContainer $container
      * @test
      */
-    public function Circular_dependency_handling(IDependencyContainer $container) : void {
+    public function Can_handle_instance_registration(IDependencyContainer $container) : void {
+
+        // act
+        $result = $container->Instance;
+
+        // assert
+        static::assertInstanceOf(Instance::class, $result);
+    }
+
+    /**
+     * @dataProvider containerProvider
+     * @param IDependencyContainer $container
+     * @test
+     */
+    public function Can_handle_type_registration(IDependencyContainer $container) : void {
+
+        // arrange
+        $container->flushInstance('Instance');
+        $container->registerType('Plugh', Instance::class);
+
+        // act
+        /** @noinspection PhpUndefinedFieldInspection */
+        $result = $container->Plugh;
+
+        // assert
+        static::assertInstanceOf(Instance::class, $result);
+    }
+
+    /**
+     * @dataProvider containerProvider
+     * @param IDependencyContainer $container
+     * @test
+     */
+    public function Can_handle_builder_registration(IDependencyContainer $container) : void {
+
+        // arrange
+        $container->flushInstance('Instance');
+        $container->registerBuilder('Xyzzy', function(IDependencyContainer $container) : Instance {
+            static::assertInstanceOf(DependencyContainer::class, $container);
+            return new Instance();
+        });
+
+        // act
+        /** @noinspection PhpUndefinedFieldInspection */
+        $result = $container->Xyzzy;
+
+        // assert
+        static::assertInstanceOf(Instance::class, $result);
+    }
+
+    /**
+     * @dataProvider containerProvider
+     * @param IDependencyContainer $container
+     * @test
+     */
+    public function Can_handle_circular_dependency_resolution(IDependencyContainer $container) : void {
 
         // act
         $foo = $container->CircularDependencyOne;
@@ -68,64 +125,40 @@ class OpenContainerTest extends TestCase {
      * @param IDependencyContainer $container
      * @test
      */
-    public function Instance_registration_handling(IDependencyContainer $container) : void {
-
-        // act
-        $result = $container->Instance;
+    public function Can_handle_unregistered_dependency(IDependencyContainer $container) {
 
         // assert
-        static::assertInstanceOf(Instance::class, $result);
-    }
-
-    /**
-     * @dataProvider containerProvider
-     * @param IDependencyContainer $container
-     * @test
-     */
-    public function Type_registration_handling(IDependencyContainer $container) : void {
-
-        // arrange
-        $container = new DependencyContainer();
-        $container->flushInstance('Instance');
-        $container->registerType('Plugh', Instance::class);
+        static::expectException(OpenContainerNotRegisteredInContainerException::class);
 
         // act
         /** @noinspection PhpUndefinedFieldInspection */
-        $result = $container->Plugh;
-
-        // assert
-        static::assertInstanceOf(Instance::class, $result);
+        $container->Ogre;
     }
 
     /**
-     * @dataProvider containerProvider
-     * @param IDependencyContainer $container
      * @test
      */
-    public function Builder_registration_handling(IDependencyContainer $container) : void {
+    public function Can_handle_deferred_dependency_construction_error() {
+
+        // assert
+        static::expectException(OpenContainerCannotBuildDeferredInstanceException::class);
 
         // arrange
-        $container->flushInstance('Instance');
-        $container->registerBuilder('Xyzzy', function(IDependencyContainer $container) : Instance {
-            static::assertInstanceOf(DependencyContainer::class, $container);
+        $container = (new DependencyContainer())->toDeferredContainer();
+        $container->registerBuilder('Puppy', function() {
             return new Instance();
         });
 
         // act
-        /** @noinspection PhpUndefinedFieldInspection */
-        $result = $container->Xyzzy;
-
-        // assert
-        static::assertInstanceOf(Instance::class, $result);
+        $container->Puppy;
     }
 
     /**
+     * @dataProvider containerProvider
+     * @param IDependencyContainer $container
      * @test
      */
-    public function Is_registered() {
-
-        // arrange
-        $container = new DependencyContainer();
+    public function Can_check_if_dependency_is_registered(IDependencyContainer $container) {
 
         // act
         $result1 = $container->isRegistered('Instance');
@@ -137,12 +170,13 @@ class OpenContainerTest extends TestCase {
     }
 
     /**
+     * @dataProvider containerProvider
+     * @param IDependencyContainer $container
      * @test
      */
-    public function Is_resolved() {
+    public function Can_check_if_dependency_is_resolved(IDependencyContainer $container) {
 
         // arrange
-        $container = new DependencyContainer();
         $container->registerType('Plugh', Instance::class);
 
         // act
@@ -150,10 +184,21 @@ class OpenContainerTest extends TestCase {
 
         /** @noinspection PhpUndefinedFieldInspection */
         $plugh = $container->Plugh;
-        $result2 = $container->isResolved('Plugh');
+        if($container->isDeferredContainer()) {
+            $result2 = $container->isResolved('Plugh');
+            $plugh->doSomething();
+            $result3 = $container->isResolved('Plugh');
 
-        // assert
-        static::assertFalse($result1);
-        static::assertTrue($result2);
+            // assert
+            static::assertFalse($result1);
+            static::assertFalse($result2);
+            static::assertTrue($result3);
+        } else {
+            $result2 = $container->isResolved('Plugh');
+
+            // assert
+            static::assertFalse($result1);
+            static::assertTrue($result2);
+        }
     }
 }

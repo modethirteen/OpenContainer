@@ -26,7 +26,7 @@ use ReflectionFunction;
 class OpenContainer implements IContainer {
 
     /**
-     * @var Closure[]
+     * @var array<Closure>
      */
     private array $builders = [];
 
@@ -136,6 +136,10 @@ class OpenContainer implements IContainer {
     }
 
     public function isResolved(string $id): bool {
+        if($this->isDeferred && isset($this->deferredInstances[$id])) {
+            $instance = $this->deferredInstances[$id];
+            return $instance->isProxyInitialized();
+        }
         return isset($this->instances[$id]);
     }
 

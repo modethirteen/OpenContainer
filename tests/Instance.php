@@ -21,4 +21,7 @@ namespace modethirteen\OpenContainer\Tests;
  * @package modethirteen\OpenContainer\Tests
  */
 class Instance {
+
+    public function doSomething() {
+    }
 }

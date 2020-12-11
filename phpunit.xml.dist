@@ -8,5 +8,8 @@
         <include>
             <directory suffix=".php">src</directory>
         </include>
+        <exclude>
+            <file>src/IContainer.php</file>
+        </exclude>
     </coverage>
 </phpunit>

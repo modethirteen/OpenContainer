@@ -141,6 +141,10 @@ A deferred container attempts to use reflection and class proxies to avoid circu
 $container = (new OpenContainer)->toDeferredContainer();
 
 // all methods on a deferred container are identical to a non-deferred container
-$container->registerBuilder('Plugh', function(IContainer $container) { ... });
+$container->registerType('Plugh', Plugh::class);
+$container->registerInstance('Plugh', new Plugh());
+
+// closure function style builders require a return type, otherwise an OpenContainerCannotBuildDeferredInstanceException will be thrown 
+$container->registerBuilder('Plugh', function(IContainer $container) : Plugh { ... });
 $container->Plugh;
 ```
