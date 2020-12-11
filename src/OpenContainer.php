@@ -135,6 +135,10 @@ class OpenContainer implements IContainer {
         return in_array($id, array_merge(array_keys($this->builders), array_keys($this->instances), array_keys($this->types)));
     }
 
+    public function isResolved(string $id): bool {
+        return isset($this->instances[$id]);
+    }
+
     public function registerBuilder(string $id, Closure $builder) : void {
         $this->unregister($id);
         $this->builders[$id] = $builder;

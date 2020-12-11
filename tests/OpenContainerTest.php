@@ -85,6 +85,7 @@ class OpenContainerTest extends TestCase {
     public function Type_registration_handling(IDependencyContainer $container) : void {
 
         // arrange
+        $container = new DependencyContainer();
         $container->flushInstance('Instance');
         $container->registerType('Plugh', Instance::class);
 
@@ -116,5 +117,43 @@ class OpenContainerTest extends TestCase {
 
         // assert
         static::assertInstanceOf(Instance::class, $result);
+    }
+
+    /**
+     * @test
+     */
+    public function Is_registered() {
+
+        // arrange
+        $container = new DependencyContainer();
+
+        // act
+        $result1 = $container->isRegistered('Instance');
+        $result2 = $container->isRegistered('Fred');
+
+        // assert
+        static::assertTrue($result1);
+        static::assertFalse($result2);
+    }
+
+    /**
+     * @test
+     */
+    public function Is_resolved() {
+
+        // arrange
+        $container = new DependencyContainer();
+        $container->registerType('Plugh', Instance::class);
+
+        // act
+        $result1 = $container->isResolved('Plugh');
+
+        /** @noinspection PhpUndefinedFieldInspection */
+        $plugh = $container->Plugh;
+        $result2 = $container->isResolved('Plugh');
+
+        // assert
+        static::assertFalse($result1);
+        static::assertTrue($result2);
     }
 }

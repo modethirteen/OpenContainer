@@ -37,6 +37,12 @@ interface IContainer {
     function isRegistered(string $id) : bool;
 
     /**
+     * @param string $id
+     * @return bool
+     */
+    function isResolved(string $id) : bool;
+
+    /**
      * Register a callback that builds an instance
      *
      * @param string $id
