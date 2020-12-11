@@ -14,6 +14,7 @@ OpenContainer was created as an attempt to leverage strict type checking availab
 ## Requirements
 
 * PHP < 7.4 (0.x)
+* PHP >= 7.2 (php72, 1.x)
 * PHP 7.4+ (main, 2.x)
 
 ## Installation
