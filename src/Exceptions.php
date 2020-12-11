@@ -1,8 +1,9 @@
 <?php
+/** @noinspection PhpIllegalPsrClassPathInspection */
+/** @noinspection PhpMultipleClassesDeclarationsInOneFile */
+
 /**
- * MindTouch OpenContainer - a dependency injection container for PHP
- * Copyright (C) 2006-2016 MindTouch, Inc.
- * www.mindtouch.com  oss@mindtouch.com
+ * OpenContainer - a dependency injection container for PHP
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,18 +17,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-namespace MindTouch\OpenContainer\test;
+namespace modethirteen\OpenContainer;
 
-class InjectableTestClassWithComplexDependenciesOne {
+use Exception;
 
-    private $DependencyOne;
-    private $DependencyTwo;
+class OpenContainerNotRegisteredInContainerException extends Exception {
 
     /**
-     * @param TestContainer $Container
+     * @param string $id
      */
-    public function __construct(TestContainer $Container) {
-        $this->DependencyOne = $Container->InjectableTestClassWithNoDependencies;
-        $this->DependencyTwo = $Container->InjectableTestClassWithSimpleDependencies;
+    public function __construct(string $id) {
+        parent::__construct("Could not find '{$id}' registered in the container");
     }
 }
