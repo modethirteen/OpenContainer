@@ -17,12 +17,13 @@
 namespace modethirteen\OpenContainer;
 
 use Closure;
+use Psr\Container\ContainerInterface;
 
 /**
  * Interface IContainer
  * @package modethirteen\OpenContainer
  */
-interface IContainer {
+interface IContainer extends ContainerInterface {
 
     /**
      * @param string $id

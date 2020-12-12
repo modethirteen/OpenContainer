@@ -68,6 +68,24 @@ class OpenContainer implements IContainer {
      * @throws OpenContainerCannotBuildDeferredInstanceException
      */
     public function __get(string $id) : object {
+        return $this->get($id);
+    }
+
+    public function flushInstance(string $id) : void {
+        if(isset($this->instances[$id])) {
+            unset($this->instances[$id]);
+        }
+    }
+
+    /**
+     * @note type hint is not leveraged in this method as the psr/container interface does not include it
+     * @param string $id
+     * @return mixed|void
+     * @noinspection PhpMissingParamTypeInspection
+     * @throws OpenContainerNotRegisteredInContainerException
+     * @throws OpenContainerCannotBuildDeferredInstanceException
+     */
+    public function get($id) {
         if($this->isDeferred && isset($this->deferredInstances[$id])) {
 
             // requesting a previously generated deferred instance
@@ -107,7 +125,7 @@ class OpenContainer implements IContainer {
             // build deferred instance
             $instance = $this->deferredInstanceFactory
                 ->createProxy($type, function(&$instance, LazyLoadingInterface $proxy) use ($builder, $type) : bool {
-                    $proxy->setProxyInitializer(null);
+                    $proxy->setProxyInitializer();
                     $instance = $builder !== null ? $builder($this) : new $type($this);
                     return true;
                 });
@@ -121,10 +139,14 @@ class OpenContainer implements IContainer {
         return $instance;
     }
 
-    public function flushInstance(string $id) : void {
-        if(isset($this->instances[$id])) {
-            unset($this->instances[$id]);
-        }
+    /**
+     * @note type hint is not leveraged in this method as the psr/container interface does not include it
+     * @param string $id
+     * @return bool
+     * @noinspection PhpMissingParamTypeInspection
+     */
+    public function has($id) : bool {
+        return $this->isRegistered($id);
     }
 
     public function isDeferredContainer(): bool {

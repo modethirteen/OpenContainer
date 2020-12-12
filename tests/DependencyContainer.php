@@ -34,5 +34,7 @@ class DependencyContainer extends OpenContainer implements IDependencyContainer 
             return [];
         });
         $this->registerInstance('Instance', new Instance());
+        $this->registerType('PsrCompatibleCircularDependencyOne', PsrCompatibleCircularDependencyOne::class);
+        $this->registerType('PsrCompatibleCircularDependencyTwo', PsrCompatibleCircularDependencyTwo::class);
     }
 }

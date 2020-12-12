@@ -29,33 +29,57 @@ class OpenContainerTest extends TestCase {
     /**
      * @return array
      */
-    public static function containerProvider() : array {
+    public static function container_Provider() : array {
         return [
             'container' => [new DependencyContainer()],
-            'deferred container' => [(new DependencyContainer())->toDeferredContainer()]
+            'deferred container' => [(new DependencyContainer())->toDeferredContainer()],
         ];
     }
 
     /**
-     * @dataProvider containerProvider
+     * @return array
+     */
+    public static function container_psr_Provider() : array {
+        return [
+            'container' => [new DependencyContainer(), false],
+            'deferred container' => [(new DependencyContainer())->toDeferredContainer(), false],
+            'container with psr interface' => [new DependencyContainer(), true],
+            'deferred container with psr interface' => [(new DependencyContainer())->toDeferredContainer(), true]
+        ];
+    }
+
+    /**
+     * @return array
+     */
+    public static function psr_Provider() : array {
+        return [
+            'with psr interface' => [true],
+            'without psr interface' => [false]
+        ];
+    }
+
+    /**
+     * @dataProvider container_psr_Provider
      * @param IDependencyContainer $container
+     * @param bool $psr
      * @test
      */
-    public function Can_handle_instance_registration(IDependencyContainer $container) : void {
+    public function Can_handle_instance_registration(IDependencyContainer $container, bool $psr) : void {
 
         // act
-        $result = $container->Instance;
+        $result = $psr ? $container->get('Instance') : $container->Instance;
 
         // assert
         static::assertInstanceOf(Instance::class, $result);
     }
 
     /**
-     * @dataProvider containerProvider
+     * @dataProvider container_psr_Provider
      * @param IDependencyContainer $container
+     * @param bool $psr
      * @test
      */
-    public function Can_handle_type_registration(IDependencyContainer $container) : void {
+    public function Can_handle_type_registration(IDependencyContainer $container, bool $psr) : void {
 
         // arrange
         $container->flushInstance('Instance');
@@ -63,18 +87,19 @@ class OpenContainerTest extends TestCase {
 
         // act
         /** @noinspection PhpUndefinedFieldInspection */
-        $result = $container->Plugh;
+        $result = $psr ? $container->get('Plugh') : $container->Plugh;
 
         // assert
         static::assertInstanceOf(Instance::class, $result);
     }
 
     /**
-     * @dataProvider containerProvider
+     * @dataProvider container_psr_Provider
      * @param IDependencyContainer $container
+     * @param bool $psr
      * @test
      */
-    public function Can_handle_builder_registration(IDependencyContainer $container) : void {
+    public function Can_handle_builder_registration(IDependencyContainer $container, bool $psr) : void {
 
         // arrange
         $container->flushInstance('Instance');
@@ -85,60 +110,83 @@ class OpenContainerTest extends TestCase {
 
         // act
         /** @noinspection PhpUndefinedFieldInspection */
-        $result = $container->Xyzzy;
+        $result = $psr ? $container->get('Xyzzy') : $container->Xyzzy;
 
         // assert
         static::assertInstanceOf(Instance::class, $result);
     }
 
     /**
-     * @dataProvider containerProvider
+     * @dataProvider container_psr_Provider
      * @param IDependencyContainer $container
+     * @param bool $psr
      * @test
      */
-    public function Can_handle_circular_dependency_resolution(IDependencyContainer $container) : void {
+    public function Can_handle_circular_dependency_resolution(IDependencyContainer $container, bool $psr) : void {
+
+        // arrange
+        if($psr && !$container->isDeferredContainer()) {
+            static::markTestSkipped('Using the PSR-11 container "get" method with a non-deferred container creates an endless nested function loop');
+        }
 
         // act
-        $foo = $container->CircularDependencyOne;
-        $bar = $container->CircularDependencyTwo;
+        $foo = $psr ? $container->get('PsrCompatibleCircularDependencyOne') : $container->CircularDependencyOne;
+        $bar = $psr ? $container->get('PsrCompatibleCircularDependencyTwo') : $container->CircularDependencyTwo;
 
         // assert
         if($container->isDeferredContainer()) {
 
             // deferred container can manage circular dependencies at construction
-            static::assertInstanceOf(CircularDependencyOne::class, $foo);
-            static::assertInstanceOf(CircularDependencyTwo::class, $bar);
-            static::assertInstanceOf(CircularDependencyOne::class, $bar->getDependency());
-            static::assertInstanceOf(CircularDependencyTwo::class, $foo->getDependency());
+            if($psr) {
+                static::assertInstanceOf(PsrCompatibleCircularDependencyOne::class, $foo);
+                static::assertInstanceOf(PsrCompatibleCircularDependencyTwo::class, $bar);
+                static::assertInstanceOf(PsrCompatibleCircularDependencyOne::class, $bar->getDependency());
+                static::assertInstanceOf(PsrCompatibleCircularDependencyTwo::class, $foo->getDependency());
+            } else {
+                static::assertInstanceOf(CircularDependencyOne::class, $foo);
+                static::assertInstanceOf(CircularDependencyTwo::class, $bar);
+                static::assertInstanceOf(CircularDependencyOne::class, $bar->getDependency());
+                static::assertInstanceOf(CircularDependencyTwo::class, $foo->getDependency());
+            }
         } else {
 
             // without deferred container, circular dependencies are presented as null in injectable class constructors
-            static::assertInstanceOf(CircularDependencyOne::class, $foo);
-            static::assertInstanceOf(CircularDependencyTwo::class, $bar);
-            static::assertNull($bar->getDependency());
-            static::assertInstanceOf(CircularDependencyTwo::class, $foo->getDependency());
+            if($psr) {
+                static::assertInstanceOf(PsrCompatibleCircularDependencyOne::class, $foo);
+                static::assertInstanceOf(PsrCompatibleCircularDependencyTwo::class, $bar);
+                static::assertNull($bar->getDependency());
+                static::assertInstanceOf(PsrCompatibleCircularDependencyTwo::class, $foo->getDependency());
+            } else {
+                static::assertInstanceOf(CircularDependencyOne::class, $foo);
+                static::assertInstanceOf(CircularDependencyTwo::class, $bar);
+                static::assertNull($bar->getDependency());
+                static::assertInstanceOf(CircularDependencyTwo::class, $foo->getDependency());
+            }
         }
     }
 
     /**
-     * @dataProvider containerProvider
+     * @dataProvider container_psr_Provider
      * @param IDependencyContainer $container
+     * @param bool $psr
      * @test
      */
-    public function Can_handle_unregistered_dependency(IDependencyContainer $container) {
+    public function Can_handle_unregistered_dependency(IDependencyContainer $container, bool $psr) : void {
 
         // assert
         static::expectException(OpenContainerNotRegisteredInContainerException::class);
 
         // act
         /** @noinspection PhpUndefinedFieldInspection */
-        $container->Ogre;
+        $psr ? $container->get('Ogre') : $container->Ogre;
     }
 
     /**
+     * @dataProvider psr_Provider
+     * @param bool $psr
      * @test
      */
-    public function Can_handle_deferred_dependency_construction_error() {
+    public function Can_handle_deferred_dependency_construction_error(bool $psr) : void {
 
         // assert
         static::expectException(OpenContainerCannotBuildDeferredInstanceException::class);
@@ -150,19 +198,20 @@ class OpenContainerTest extends TestCase {
         });
 
         // act
-        $container->Puppy;
+        $psr ? $container->get('Puppy') : $container->Puppy;
     }
 
     /**
-     * @dataProvider containerProvider
+     * @dataProvider container_psr_Provider
      * @param IDependencyContainer $container
+     * @param bool $psr
      * @test
      */
-    public function Can_check_if_dependency_is_registered(IDependencyContainer $container) {
+    public function Can_check_if_dependency_is_registered(IDependencyContainer $container, bool $psr) : void {
 
         // act
-        $result1 = $container->isRegistered('Instance');
-        $result2 = $container->isRegistered('Fred');
+        $result1 = $psr ? $container->has('Instance') : $container->isRegistered('Instance');
+        $result2 = $psr ? $container->has('Fred') : $container->isRegistered('Fred');
 
         // assert
         static::assertTrue($result1);
@@ -170,11 +219,11 @@ class OpenContainerTest extends TestCase {
     }
 
     /**
-     * @dataProvider containerProvider
+     * @dataProvider container_Provider
      * @param IDependencyContainer $container
      * @test
      */
-    public function Can_check_if_dependency_is_resolved(IDependencyContainer $container) {
+    public function Can_check_if_dependency_is_resolved(IDependencyContainer $container) : void {
 
         // arrange
         $container->registerType('Plugh', Instance::class);

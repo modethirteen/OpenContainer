@@ -21,8 +21,10 @@ declare(strict_types=1);
 namespace modethirteen\OpenContainer;
 
 use Exception;
+use Psr\Container\ContainerExceptionInterface;
+use Psr\Container\NotFoundExceptionInterface;
 
-class OpenContainerCannotBuildDeferredInstanceException extends Exception {
+class OpenContainerCannotBuildDeferredInstanceException extends Exception implements ContainerExceptionInterface {
 
     /**
      * @param string $id
@@ -32,7 +34,7 @@ class OpenContainerCannotBuildDeferredInstanceException extends Exception {
     }
 }
 
-class OpenContainerNotRegisteredInContainerException extends Exception {
+class OpenContainerNotRegisteredInContainerException extends Exception implements NotFoundExceptionInterface {
 
     /**
      * @param string $id
