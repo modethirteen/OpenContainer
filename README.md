@@ -11,6 +11,8 @@ A dependency injection container for PHP, please enjoy responsibly.
 
 OpenContainer was created as an attempt to leverage strict type checking available in full-featured PHP development environments, such as JetBrains PHPStorm, or the native strict type checking of PHP 7+, when managing dependencies from a centralized container. In addition, it contains some experiments with reflection and [proxies](https://github.com/Ocramius/ProxyManager) in order to avoid problems when circular dependencies are introduced in the container's dependency chain.
 
+In addition to exposing dependencies as type-checked class properties, OpenContainer is also compatible with the [PSR-11 Container Interface](https://www.php-fig.org/psr/psr-11), for interoperability with several PHP frameworks.
+
 ## Requirements
 
 * PHP < 7.4 (0.x)
@@ -136,7 +138,7 @@ $instance = $container->Qux;
 
 ## Deferred Container
 
-A deferred container attempts to use reflection and class proxies to avoid circular dependencies. A deferred container returns proxies, which are not materialized until a method or property is accessed on the proxy. This behavior is useful as without it, every dependency in the tree is instantiated when the root dependency is first instantiated (whether those downstream dependencies will be eventually used or not). Without deferring dependency instantiation until those dependencies are actually needed, any circular dependency returns a null value or, depending on configuration, raises an _Undefined Property_ warning if they can't be resolved.
+A deferred container attempts to use reflection and class proxies to avoid circular dependencies. A deferred container returns proxies, which are not materialized until a method or property is accessed on the proxy. This behavior is useful as without it, every dependency in the tree is instantiated when the root dependency is first instantiated (whether those downstream dependencies will be eventually used or not). Without deferring dependency instantiation until those dependencies are actually needed, any circular dependency returns a null value, an endless nested function loop, or raises an _Undefined Property_ warning if they can't be resolved.
 
 ```php
 $container = (new OpenContainer)->toDeferredContainer();
