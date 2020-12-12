@@ -19,6 +19,8 @@ namespace modethirteen\OpenContainer\Tests;
 use modethirteen\OpenContainer\OpenContainerCannotBuildDeferredInstanceException;
 use modethirteen\OpenContainer\OpenContainerNotRegisteredInContainerException;
 use PHPUnit\Framework\TestCase;
+use Psr\Container\ContainerExceptionInterface;
+use Psr\Container\NotFoundExceptionInterface;
 
 /**
  * Class OpenContainerTest
@@ -249,5 +251,15 @@ class OpenContainerTest extends TestCase {
             static::assertFalse($result1);
             static::assertTrue($result2);
         }
+    }
+
+    /**
+     * @test
+     */
+    public function Exceptions_are_PSR11_compatible() : void {
+
+        // assert
+        static::assertInstanceOf(NotFoundExceptionInterface::class, new OpenContainerNotRegisteredInContainerException('foo'));
+        static::assertInstanceOf(ContainerExceptionInterface::class, new OpenContainerCannotBuildDeferredInstanceException('foo'));
     }
 }
