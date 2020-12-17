@@ -15,9 +15,9 @@ In addition to exposing dependencies as type-checked class properties, OpenConta
 
 ## Requirements
 
-* PHP < 7.4 (0.x)
-* PHP >= 7.2 (php72, 1.x)
-* PHP 7.4+ (main, 2.x)
+* PHP < 7.2 (0.x)
+* PHP 7.2, 7.3, 7.4 (1.x)
+* PHP 7.4 (main, 2.x)
 
 ## Installation
 
