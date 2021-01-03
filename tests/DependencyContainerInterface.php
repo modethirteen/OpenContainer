@@ -16,14 +16,12 @@
  */
 namespace modethirteen\OpenContainer\Tests;
 
-use modethirteen\OpenContainer\IContainer;
+use modethirteen\OpenContainer\OpenContainerInterface;
 
 /**
- * Interface IDependencyContainer
- * @package modethirteen\OpenContainer\Tests
  * @property CircularDependencyOne $CircularDependencyOne
  * @property CircularDependencyTwo $CircularDependencyTwo
  * @property Instance $Instance
  */
-interface IDependencyContainer extends IContainer {
+interface DependencyContainerInterface extends OpenContainerInterface {
 }

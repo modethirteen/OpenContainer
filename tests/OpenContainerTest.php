@@ -22,10 +22,6 @@ use PHPUnit\Framework\TestCase;
 use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\NotFoundExceptionInterface;
 
-/**
- * Class OpenContainerTest
- * @package modethirteen\OpenContainer\Tests
- */
 class OpenContainerTest extends TestCase {
 
     /**
@@ -62,11 +58,11 @@ class OpenContainerTest extends TestCase {
 
     /**
      * @dataProvider container_psr_Provider
-     * @param IDependencyContainer $container
+     * @param DependencyContainerInterface $container
      * @param bool $psr
      * @test
      */
-    public function Can_handle_instance_registration(IDependencyContainer $container, bool $psr) : void {
+    public function Can_handle_instance_registration(DependencyContainerInterface $container, bool $psr) : void {
 
         // act
         $result = $psr ? $container->get('Instance') : $container->Instance;
@@ -77,11 +73,11 @@ class OpenContainerTest extends TestCase {
 
     /**
      * @dataProvider container_psr_Provider
-     * @param IDependencyContainer $container
+     * @param DependencyContainerInterface $container
      * @param bool $psr
      * @test
      */
-    public function Can_handle_type_registration(IDependencyContainer $container, bool $psr) : void {
+    public function Can_handle_type_registration(DependencyContainerInterface $container, bool $psr) : void {
 
         // arrange
         $container->flushInstance('Instance');
@@ -97,15 +93,15 @@ class OpenContainerTest extends TestCase {
 
     /**
      * @dataProvider container_psr_Provider
-     * @param IDependencyContainer $container
+     * @param DependencyContainerInterface $container
      * @param bool $psr
      * @test
      */
-    public function Can_handle_builder_registration(IDependencyContainer $container, bool $psr) : void {
+    public function Can_handle_builder_registration(DependencyContainerInterface $container, bool $psr) : void {
 
         // arrange
         $container->flushInstance('Instance');
-        $container->registerBuilder('Xyzzy', function(IDependencyContainer $container) : Instance {
+        $container->registerBuilder('Xyzzy', function(DependencyContainerInterface $container) : Instance {
             static::assertInstanceOf(DependencyContainer::class, $container);
             return new Instance();
         });
@@ -120,11 +116,11 @@ class OpenContainerTest extends TestCase {
 
     /**
      * @dataProvider container_psr_Provider
-     * @param IDependencyContainer $container
+     * @param DependencyContainerInterface $container
      * @param bool $psr
      * @test
      */
-    public function Can_handle_circular_dependency_resolution(IDependencyContainer $container, bool $psr) : void {
+    public function Can_handle_circular_dependency_resolution(DependencyContainerInterface $container, bool $psr) : void {
 
         // arrange
         if($psr && !$container->isDeferredContainer()) {
@@ -169,11 +165,11 @@ class OpenContainerTest extends TestCase {
 
     /**
      * @dataProvider container_psr_Provider
-     * @param IDependencyContainer $container
+     * @param DependencyContainerInterface $container
      * @param bool $psr
      * @test
      */
-    public function Can_handle_unregistered_dependency(IDependencyContainer $container, bool $psr) : void {
+    public function Can_handle_unregistered_dependency(DependencyContainerInterface $container, bool $psr) : void {
 
         // assert
         static::expectException(OpenContainerNotRegisteredInContainerException::class);
@@ -205,11 +201,11 @@ class OpenContainerTest extends TestCase {
 
     /**
      * @dataProvider container_psr_Provider
-     * @param IDependencyContainer $container
+     * @param DependencyContainerInterface $container
      * @param bool $psr
      * @test
      */
-    public function Can_check_if_dependency_is_registered(IDependencyContainer $container, bool $psr) : void {
+    public function Can_check_if_dependency_is_registered(DependencyContainerInterface $container, bool $psr) : void {
 
         // act
         $result1 = $psr ? $container->has('Instance') : $container->isRegistered('Instance');
@@ -222,10 +218,10 @@ class OpenContainerTest extends TestCase {
 
     /**
      * @dataProvider container_Provider
-     * @param IDependencyContainer $container
+     * @param DependencyContainerInterface $container
      * @test
      */
-    public function Can_check_if_dependency_is_resolved(IDependencyContainer $container) : void {
+    public function Can_check_if_dependency_is_resolved(DependencyContainerInterface $container) : void {
 
         // arrange
         $container->registerType('Plugh', Instance::class);

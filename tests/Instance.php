@@ -16,10 +16,6 @@
  */
 namespace modethirteen\OpenContainer\Tests;
 
-/**
- * Class Instance
- * @package modethirteen\OpenContainer\Tests
- */
 class Instance {
 
     public function doSomething() {

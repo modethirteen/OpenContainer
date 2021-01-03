@@ -16,10 +16,6 @@
  */
 namespace modethirteen\OpenContainer\Tests;
 
-/**
- * Class PsrCompatibleCircularDependencyOne
- * @package modethirteen\OpenContainer\Tests
- */
 class PsrCompatibleCircularDependencyOne {
 
     /**
@@ -28,9 +24,9 @@ class PsrCompatibleCircularDependencyOne {
     private ?PsrCompatibleCircularDependencyTwo $dependency;
 
     /**
-     * @param IDependencyContainer $container
+     * @param DependencyContainerInterface $container
      */
-    public function __construct(IDependencyContainer $container) {
+    public function __construct(DependencyContainerInterface $container) {
         $this->dependency = $container->get('PsrCompatibleCircularDependencyTwo');
     }
 

@@ -25,10 +25,7 @@
   "autoload": {
     "psr-4": {
       "modethirteen\\OpenContainer\\": ["src/"]
-    },
-    "classmap": [
-      "src/Exceptions.php"
-    ]
+    }
   },
   "autoload-dev": {
     "psr-4": {

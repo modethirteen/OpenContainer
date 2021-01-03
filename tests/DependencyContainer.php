@@ -18,16 +18,12 @@ namespace modethirteen\OpenContainer\Tests;
 
 use modethirteen\OpenContainer\OpenContainer;
 
-/**
- * Class TestContainer
- * @package modethirteen\OpenContainer\Tests
- */
-class DependencyContainer extends OpenContainer implements IDependencyContainer {
+class DependencyContainer extends OpenContainer implements DependencyContainerInterface {
 
     public function __construct() {
         parent::__construct();
         $this->registerType('CircularDependencyOne', CircularDependencyOne::class);
-        $this->registerBuilder('CircularDependencyTwo', function(IDependencyContainer $container) : CircularDependencyTwo {
+        $this->registerBuilder('CircularDependencyTwo', function(DependencyContainerInterface $container) : CircularDependencyTwo {
             return new CircularDependencyTwo($container);
         });
         $this->registerBuilder('Instance', function() : array {

@@ -16,10 +16,6 @@
  */
 namespace modethirteen\OpenContainer\Tests;
 
-/**
- * Class CircularDependencyTwo
- * @package modethirteen\OpenContainer\Tests
- */
 class CircularDependencyTwo {
 
     /**
@@ -28,9 +24,9 @@ class CircularDependencyTwo {
     private ?CircularDependencyOne $dependency;
 
     /**
-     * @param IDependencyContainer $container
+     * @param DependencyContainerInterface $container
      */
-    public function __construct(IDependencyContainer $container) {
+    public function __construct(DependencyContainerInterface $container) {
         $this->dependency = $container->CircularDependencyOne;
     }
 

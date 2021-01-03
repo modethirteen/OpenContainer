@@ -23,6 +23,7 @@ use ProxyManager\Proxy\VirtualProxyInterface;
 use ReflectionException;
 use ReflectionFunction;
 
+/** @noinspection PhpDeprecationInspection */
 class OpenContainer implements IContainer {
 
     /**

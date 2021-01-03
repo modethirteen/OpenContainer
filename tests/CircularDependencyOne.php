@@ -16,12 +16,6 @@
  */
 namespace modethirteen\OpenContainer\Tests;
 
-use phpDocumentor\Reflection\DocBlock\Tags\Property;
-
-/**
- * Class CircularDependencyOne
- * @package modethirteen\OpenContainer\Tests
- */
 class CircularDependencyOne {
 
     /**
@@ -30,9 +24,9 @@ class CircularDependencyOne {
     private ?CircularDependencyTwo $dependency;
 
     /**
-     * @param IDependencyContainer $container
+     * @param DependencyContainerInterface $container
      */
-    public function __construct(IDependencyContainer $container) {
+    public function __construct(DependencyContainerInterface $container) {
         $this->dependency = $container->CircularDependencyTwo;
     }
 

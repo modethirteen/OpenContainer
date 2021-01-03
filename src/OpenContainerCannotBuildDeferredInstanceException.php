@@ -1,7 +1,4 @@
-<?php
-/** @noinspection PhpIllegalPsrClassPathInspection */
-/** @noinspection PhpMultipleClassesDeclarationsInOneFile */
-declare(strict_types=1);
+<?php declare(strict_types=1);
 
 /**
  * OpenContainer - a dependency injection container for PHP
@@ -22,7 +19,6 @@ namespace modethirteen\OpenContainer;
 
 use Exception;
 use Psr\Container\ContainerExceptionInterface;
-use Psr\Container\NotFoundExceptionInterface;
 
 class OpenContainerCannotBuildDeferredInstanceException extends Exception implements ContainerExceptionInterface {
 
@@ -31,15 +27,5 @@ class OpenContainerCannotBuildDeferredInstanceException extends Exception implem
      */
     public function __construct(string $id) {
         parent::__construct("Could not build a deferred instance of '{$id}'");
-    }
-}
-
-class OpenContainerNotRegisteredInContainerException extends Exception implements NotFoundExceptionInterface {
-
-    /**
-     * @param string $id
-     */
-    public function __construct(string $id) {
-        parent::__construct("Could not find '{$id}' registered in the container");
     }
 }

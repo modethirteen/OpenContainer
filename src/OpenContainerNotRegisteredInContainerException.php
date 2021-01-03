@@ -1,4 +1,5 @@
 <?php declare(strict_types=1);
+
 /**
  * OpenContainer - a dependency injection container for PHP
  *
@@ -16,9 +17,15 @@
  */
 namespace modethirteen\OpenContainer;
 
-/**
- * @deprecated use \modethirteen\OpenContainer\OpenContainerInterface
- * @see https://www.php-fig.org/psr/psr-12/
- */
-interface IContainer extends OpenContainerInterface {
+use Exception;
+use Psr\Container\NotFoundExceptionInterface;
+
+class OpenContainerNotRegisteredInContainerException extends Exception implements NotFoundExceptionInterface {
+
+    /**
+     * @param string $id
+     */
+    public function __construct(string $id) {
+        parent::__construct("Could not find '{$id}' registered in the container");
+    }
 }
